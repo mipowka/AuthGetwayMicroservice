@@ -38,6 +38,10 @@ public class GatewayFilter extends AbstractGatewayFilterFactory<GatewayFilter.Co
                 return chain.filter(exchange);
             }
 
+            if (string.contains("/auth/login")) {
+                return chain.filter(exchange);
+            }
+
             String authorization = exchange.getRequest().getHeaders().getFirst("Authorization");
             if (authorization == null || !authorization.startsWith("Bearer ")) {
                 exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -48,19 +52,14 @@ public class GatewayFilter extends AbstractGatewayFilterFactory<GatewayFilter.Co
                 Jwts.parser()
                         .verifyWith(secretKey)
                         .build()
-                        .parseSignedClaims(authorization)
-                        .getPayload();
+                        .parseSignedClaims(authorization.substring("Bearer ".length()));
             } catch (JwtException | IllegalArgumentException e) {
                 exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                 return exchange.getResponse().setComplete();
             }
 
             return chain.filter(exchange);
-
         };
-
-
-
 
     }
 
