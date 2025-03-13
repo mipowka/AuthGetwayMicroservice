@@ -34,7 +34,7 @@ public class GatewayFilter extends AbstractGatewayFilterFactory<GatewayFilter.Co
         return (exchange, chain) -> {
 
             String string = exchange.getRequest().getPath().toString();
-            if (string.contains("/users/register/**")) {
+            if (string.contains("/users/register")) {
                 return chain.filter(exchange);
             }
 
